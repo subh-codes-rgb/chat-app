@@ -82,3 +82,4 @@ npm run build
 
 WebSocket clients send `{"type":"message","content":"Hello"}`. The server
 validates membership, persists the message, and broadcasts it to the conversation.
+# chat-app
