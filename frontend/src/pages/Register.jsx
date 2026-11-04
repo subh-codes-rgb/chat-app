@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, MessageCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/useAuth";
 
@@ -17,6 +17,7 @@ function getErrorMessage(error) {
 
 function Register() {
   const { register } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     display_name: "",
@@ -40,7 +41,10 @@ function Register() {
       });
       navigate("/login", {
         replace: true,
-        state: { message: "Your account is ready. Sign in to start chatting." },
+        state: {
+          message: "Your account is ready. Sign in to start chatting.",
+          from: location.state?.from,
+        },
       });
     } catch (requestError) {
       setError(getErrorMessage(requestError));
@@ -143,7 +147,7 @@ function Register() {
           </form>
 
           <p className="auth-switch">
-            Already have an account? <Link to="/login">Sign in</Link>
+            Already have an account? <Link state={location.state} to="/login">Sign in</Link>
           </p>
         </div>
         <div className="auth-legal">A quieter corner of the internet.</div>

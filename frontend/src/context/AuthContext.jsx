@@ -12,6 +12,26 @@ export function AuthProvider({ children }) {
     () => Boolean(localStorage.getItem("access")),
   );
   const [authError, setAuthError] = useState("");
+  const [themePreference, setThemePreference] = useState(
+    () => localStorage.getItem("themePreference") || "system",
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyTheme = () => {
+      const theme =
+        themePreference === "system"
+          ? mediaQuery.matches
+            ? "dark"
+            : "light"
+          : themePreference;
+      document.documentElement.dataset.theme = theme;
+    };
+
+    applyTheme();
+    mediaQuery.addEventListener("change", applyTheme);
+    return () => mediaQuery.removeEventListener("change", applyTheme);
+  }, [themePreference]);
 
   useEffect(() => {
     const handleTokenRefresh = (event) => setAccessToken(event.detail);
@@ -99,6 +119,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (updatedUser) => setUser(updatedUser);
+
+  const updateThemePreference = (preference) => {
+    localStorage.setItem("themePreference", preference);
+    setThemePreference(preference);
+  };
+
   const value = {
     user,
     accessToken,
@@ -108,6 +135,9 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
+    updateUser,
+    themePreference,
+    updateThemePreference,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -27,6 +27,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/connect/:username"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="*"
         element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />}
       />

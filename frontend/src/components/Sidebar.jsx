@@ -3,6 +3,7 @@ import {
   MessageCircle,
   MessageSquarePlus,
   Search,
+  Settings,
   Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -30,15 +31,19 @@ function Sidebar({
   peopleView,
   users,
   peopleLoading,
+  onlineOnly,
+  onOnlineOnlyChange,
   search,
   onSearchChange,
   onSelectConversation,
   onSelectPerson,
   onShowChats,
   onShowPeople,
+  onShowSettings,
+  settingsView,
   onLogout,
 }) {
-  const isPeopleView = peopleView;
+  const isPeopleView = peopleView && !settingsView;
   const visibleConversations = conversations.filter((conversation) =>
     getConversationTitle(conversation, user?.id)
       .toLowerCase()
@@ -46,7 +51,9 @@ function Sidebar({
   );
 
   return (
-    <aside className={`sidebar ${selectedId ? "sidebar-has-selection" : ""}`}>
+    <aside
+      className={`sidebar ${selectedId || settingsView ? "sidebar-has-selection" : ""}`}
+    >
       <header className="sidebar-header">
         <Link className="brand" to="/home">
           <span className="brand-mark"><MessageCircle size={18} /></span>
@@ -90,14 +97,16 @@ function Sidebar({
 
       <nav aria-label="Message views" className="sidebar-tabs">
         <button
-          aria-current={!isPeopleView ? "page" : undefined}
-          className={!isPeopleView ? "sidebar-tab active" : "sidebar-tab"}
+          aria-current={!isPeopleView && !settingsView ? "page" : undefined}
+          className={!isPeopleView && !settingsView ? "sidebar-tab active" : "sidebar-tab"}
           onClick={onShowChats}
           type="button"
         >
           <MessageCircle size={16} />
           Chats
-          {!isPeopleView && <span className="tab-count">{conversations.length}</span>}
+          {!isPeopleView && !settingsView && (
+            <span className="tab-count">{conversations.length}</span>
+          )}
         </button>
         <button
           aria-current={isPeopleView ? "page" : undefined}
@@ -112,7 +121,16 @@ function Sidebar({
 
       <div className="sidebar-list-heading">
         <span>{isPeopleView ? "FIND YOUR PEOPLE" : "RECENT CHATS"}</span>
-        {isPeopleView && <span className="list-hint">Up to 50 people</span>}
+        {isPeopleView && (
+          <label className="online-filter">
+            <input
+              checked={onlineOnly}
+              onChange={(event) => onOnlineOnlyChange(event.target.checked)}
+              type="checkbox"
+            />
+            Online
+          </label>
+        )}
       </div>
 
       <div className="conversation-list">
@@ -136,9 +154,11 @@ function Sidebar({
                   />
                   <span className="person-row-copy">
                     <strong>{name}</strong>
-                    <span>@{person.username}</span>
+                    <span>{person.bio || `@${person.username}`}</span>
                   </span>
-                  <span className="person-start" aria-hidden="true">+</span>
+                  <span className="person-start" aria-hidden="true">
+                    <MessageSquarePlus size={15} />
+                  </span>
                 </button>
               );
             })
@@ -149,7 +169,9 @@ function Sidebar({
               <span>
                 {search
                   ? "Try another name or username."
-                  : "Invite someone by searching their username."}
+                  : onlineOnly
+                    ? "Try again later or turn off Online to see everyone."
+                    : "Search by name or username to find someone new."}
               </span>
             </div>
           )
@@ -211,8 +233,18 @@ function Sidebar({
         />
         <span className="profile-copy">
           <strong>{user?.display_name || user?.username}</strong>
-          <span>Personal space</span>
+          <span>@{user?.username}</span>
         </span>
+        <button
+          aria-label="Settings"
+          aria-current={settingsView ? "page" : undefined}
+          className={`icon-button ${settingsView ? "settings-button active" : "settings-button"}`}
+          onClick={onShowSettings}
+          title="Settings"
+          type="button"
+        >
+          <Settings size={17} />
+        </button>
         <button
           aria-label="Sign out"
           className="icon-button logout-button"

@@ -18,7 +18,7 @@ function Login() {
     setLoading(true);
     try {
       await login(formData.username.trim(), formData.password);
-      navigate("/home", { replace: true });
+      navigate(location.state?.from?.pathname || "/home", { replace: true });
     } catch (requestError) {
       setError(
         requestError.response?.data?.detail ||
@@ -104,7 +104,7 @@ function Login() {
           </form>
 
           <p className="auth-switch">
-            New to gather? <Link to="/register">Create an account</Link>
+            New to gather? <Link state={location.state} to="/register">Create an account</Link>
           </p>
         </div>
         <div className="auth-legal">A quieter corner of the internet.</div>

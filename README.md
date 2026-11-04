@@ -7,6 +7,9 @@ Django Channels, and JWT authentication.
 
 - Account creation and sign-in with access-token refresh
 - Search for people and start one-to-one conversations
+- Filter people discovery to users who are online
+- Edit your public profile and change your password in Settings
+- Choose light, dark, or system appearance and share a personal connection link
 - Conversation history persisted in the database
 - Live message delivery over authenticated WebSockets, with REST fallback
 - Responsive inbox and chat interface
@@ -75,7 +78,10 @@ npm run build
 - `POST /api/accounts/register/` — create an account
 - `POST /api/accounts/token/` and `POST /api/accounts/token/refresh/` — JWT auth
 - `GET /api/accounts/me/` — current profile
-- `GET /api/accounts/users/?search=...` — search people
+- `PATCH /api/accounts/me/` — update your profile
+- `POST /api/accounts/password/` — change your password
+- `GET /api/accounts/users/?search=...&online=true` — search people (online filter optional)
+- `/connect/<username>` — sign in and open a direct chat from a shared connection link
 - `GET, POST /api/conversations/` — list chats or open/create a direct chat
 - `GET, POST /api/chat/<conversation_id>/messages/` — chat history and REST send
 - `ws://<host>/ws/chat/<conversation_id>/?token=<access-token>` — live messages
